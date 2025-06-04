@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "902053898129",
+    "project_id": "agoraflutter-eba9d",
+    "storage_bucket": "agoraflutter-eba9d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:902053898129:android:6eeee3869b608ee9511c30",
+        "android_client_info": {
+          "package_name": "com.example.agora_video_friendly"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "902053898129-3i13mqjqikd2uff8ui5ivc3vkfsn3tde.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.agora_video_friendly",
+            "certificate_hash": "3785c0c81fe8688c9e4e500fc8764752cb83e475"
+          }
+        },
+        {
+          "client_id": "902053898129-f5kn3fj5c1agvcf7s7uksru4h9nu7fcp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFB0lWEVZkz20E6Bcg7EfAbUdsWDu3OLg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "902053898129-f5kn3fj5c1agvcf7s7uksru4h9nu7fcp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "902053898129-8osb9g8cun4h65f0hhmotvumjrggic2i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.agoraVideoFriendly"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
