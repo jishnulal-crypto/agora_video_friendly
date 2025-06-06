@@ -63,6 +63,8 @@ class UserListScreen extends StatelessWidget {
                     context,
                     '/callInitiation',
                     arguments: {
+                      'callerId':currentUser?.uid,
+                      'receiverId': otherUsers[index].id, // 👈 Firestore doc ID
                       'userName': userData['displayName'] ?? 'No name',
                       'photoUrl': userData['photoURL'] ?? '',
                     },
