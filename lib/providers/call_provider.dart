@@ -29,7 +29,7 @@ class CallProvider extends ChangeNotifier {
     _isCalling = true;
 
     // 1. Start call in Firestore
-    await _callService.startCall(
+    await _callService.fireStorePushingAndFcmSending(
       callerId: callerId,
       receiverId: receiverId,
       receiverName: receiverName,
@@ -43,14 +43,13 @@ class CallProvider extends ChangeNotifier {
       onUserJoined: (uid) {
         print("Remote user joined: $uid");
         remoteUid = uid;
-
       },
       onUserOffline: (uid) {
         remoteUid = uid;
         print("Remote user left: $uid");
       },
     );
-    await _audioService.startCall();
+    await _audioService.channelConnect();
   }
 
   Future<void> endCall(String callerId, String receiverId) async {

@@ -1,75 +1,174 @@
+import 'package:agora_video_friendly/providers/call_incoming_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CallScreenIncomingReceiver extends StatelessWidget {
-  final String callerName;
-  final String callType; // "audio" or "video"
   final VoidCallback onAccept;
   final VoidCallback onDecline;
+  final String callType;
+  final String callerName;
+  final String callerId;
+  final String receiverId;
+  final bool isVideo;
+  final String channelId;
 
   const CallScreenIncomingReceiver({
-    Key? key,
-    required this.callerName,
-    required this.callType,
+    super.key,
     required this.onAccept,
     required this.onDecline,
-  }) : super(key: key);
+    required this.callType,
+    required this.callerName,
+    required this.callerId,
+    required this.receiverId,
+    required this.isVideo,
+    required this.channelId,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isVideo = callType == 'video';
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: isVideo
+            ? VideoCallUI(
+              channelId: channelId,
+                callerName: callerName,
+                onAccept: onAccept,
+                onDecline: onDecline,
+              )
+            : AudioCallUI(
+              channelId: channelId,
+                callerName: callerName,
+                onAccept: onAccept,
+                onDecline: onDecline,
+              ),
+      ),
+    );
+  }
+}
+
+
+class AudioCallUI extends StatefulWidget {
+  final String callerName;
+  final VoidCallback onAccept;
+  final VoidCallback onDecline;
+  final String channelId;
+
+  const AudioCallUI({
+    super.key,
+    required this.callerName,
+    required this.onAccept,
+    required this.onDecline,
+    required this.channelId,
+  });
+
+  @override
+  State<AudioCallUI> createState() => _AudioCallUIState();
+}
+
+class _AudioCallUIState extends State<AudioCallUI> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<CallIncomingProvider>(context, listen: false).initialize(
+        appId: CallIncomingProvider.agoraAppId,
+        channelId: widget.channelId,
+        isVideo: false,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    Provider.of<CallIncomingProvider>(context, listen: false).disposeAgora();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Spacer(),
+        const Text('Incoming Audio Call', style: TextStyle(color: Colors.white70, fontSize: 18)),
+        const SizedBox(height: 12),
+        Text(widget.callerName, style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 30),
+        const Icon(Icons.call, color: Colors.green, size: 80),
+        const Spacer(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            FloatingActionButton(heroTag: "decline_audio", onPressed: widget.onDecline, backgroundColor: Colors.red, child: const Icon(Icons.call_end)),
+            FloatingActionButton(heroTag: "accept_audio", onPressed: widget.onAccept, backgroundColor: Colors.green, child: const Icon(Icons.call)),
+          ],
+        ),
+        const SizedBox(height: 60),
+      ],
+    );
+  }
+}
+
+class VideoCallUI extends StatefulWidget {
+  final String callerName;
+  final VoidCallback onAccept;
+  final VoidCallback onDecline;
+  final String channelId;
+
+  const VideoCallUI({
+    super.key,
+    required this.callerName,
+    required this.onAccept,
+    required this.onDecline,
+    required this.channelId,
+  });
+
+  @override
+  State<VideoCallUI> createState() => _VideoCallUIState();
+}
+
+class _VideoCallUIState extends State<VideoCallUI> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<CallIncomingProvider>(context, listen: false).initialize(
+        appId:CallIncomingProvider.agoraAppId ,
+        channelId: widget.channelId,
+        isVideo: true,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    Provider.of<CallIncomingProvider>(context, listen: false).disposeAgora();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        const Center(child: Text("Video Feed will be here", style: TextStyle(color: Colors.white))),
+        Column(
           children: [
             const Spacer(),
-
-            Text(
-              isVideo ? 'Incoming Video Call' : 'Incoming Audio Call',
-              style: const TextStyle(color: Colors.white70, fontSize: 18),
-            ),
-            const SizedBox(height: 12),
-
-            Text(
-              callerName,
-              style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 30),
-
-            Icon(
-              isVideo ? Icons.videocam : Icons.call,
-              color: isVideo ? Colors.blue : Colors.green,
-              size: 80,
-            ),
-
-            const Spacer(),
-
+            Text(widget.callerName, style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Decline Button
-                FloatingActionButton(
-                  heroTag: "decline",
-                  onPressed: onDecline,
-                  backgroundColor: Colors.red,
-                  child: const Icon(Icons.call_end),
-                ),
-
-                // Accept Button
-                FloatingActionButton(
-                  heroTag: "accept",
-                  onPressed: onAccept,
-                  backgroundColor: Colors.green,
-                  child: Icon(isVideo ? Icons.videocam : Icons.call),
-                ),
+                FloatingActionButton(heroTag: "decline_video", onPressed: widget.onDecline, backgroundColor: Colors.red, child: const Icon(Icons.call_end)),
+                FloatingActionButton(heroTag: "accept_video", onPressed: widget.onAccept, backgroundColor: Colors.blue, child: const Icon(Icons.videocam)),
               ],
             ),
             const SizedBox(height: 60),
           ],
         ),
-      ),
+      ],
     );
   }
 }
+

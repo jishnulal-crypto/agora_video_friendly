@@ -23,7 +23,7 @@ class CallInitiationScreen extends StatefulWidget {
 
 class _CallInitiationScreenState extends State<CallInitiationScreen> {
   String _callType = 'none'; // can be 'none', 'audio', or 'video'
-
+  // the receivers details are displayed here , instead put the current users details here
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -391,10 +391,10 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
     await callProvider.startCall(
       callerId: widget.callerId,
       receiverId: widget.receiverId,
-      receiverName: 'receiver B',
-      receiverPhoto: 'receiver photo',
+      receiverName: widget.userName,
+      receiverPhoto: widget.photoUrl,
       isVideo: false,
-    );
+    ); 
   }
 
   @override

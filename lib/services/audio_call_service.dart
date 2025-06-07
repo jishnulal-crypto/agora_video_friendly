@@ -39,7 +39,7 @@ class AudioCallService {
     ));
   }
 
-  Future<void> startCall({String? channelNameOverride}) async {
+  Future<void> channelConnect({String? channelNameOverride}) async {
     final channel = channelNameOverride ?? channelName;
 
     await _engine.joinChannel(

@@ -12,17 +12,23 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
-            call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             if (call.method == "showIncomingCall") {
+                val callerId = call.argument<String>("callerId") ?: "Unknown"
+                val receiverId = call.argument<String>("receiverId") ?: ""
+                val isVideo = call.argument<String>("isVideo") ?: "false"
+                val channelId = call.argument<String>("channelId") ?: ""
                 val callerName = call.argument<String>("callerName") ?: "Unknown"
-                val callType = call.argument<String>("callType") ?: "audio" // or "video"
 
                 val intent = Intent(this, IncomingCallActivity::class.java).apply {
+                    putExtra("callerId", callerId)
+                    putExtra("receiverId", receiverId)
+                    putExtra("isVideo", isVideo)
+                    putExtra("channelId", channelId)
                     putExtra("callerName", callerName)
-                    putExtra("callType", callType)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 }
+
                 startActivity(intent)
                 result.success("Call UI Shown")
             } else {
@@ -31,3 +37,4 @@ class MainActivity : FlutterActivity() {
         }
     }
 }
+

@@ -37,7 +37,8 @@ class CallNotificationProvider extends ChangeNotifier {
         .listen((snapshot) {
           for (var doc in snapshot.docs) {
             final callData = doc.data();
-
+            print("this is the call data :::");
+            print(callData);
             if (_isCallMessage(callData)) {
               _showIncomingCall(callData);
             }
@@ -52,7 +53,9 @@ class CallNotificationProvider extends ChangeNotifier {
   }
 
   void _handleMessageOpenedApp(RemoteMessage message) {
-    // Handle when user taps notification
+    if (_isCallMessage(message.data)) {
+      _showIncomingCall(message.data);
+    }
   }
 
   bool _isCallMessage(Map<String, dynamic> data) {

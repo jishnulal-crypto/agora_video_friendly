@@ -40,19 +40,31 @@ class RouteGenerator {
         );
 
       case '/callScreen':
-        final uri = Uri.parse(settings.name ?? '');
-        final callType = uri.queryParameters['type'] ?? 'audio';
-        final callerName = uri.queryParameters['callerName'] ?? 'Unknown';
+  final uri = Uri.parse(settings.name ?? '');
 
-        return MaterialPageRoute(
-          builder: (_) => CallScreenIncomingReceiver(
-            onAccept: (){},
-            onDecline: () {
-            },
-            callType: callType,
-            callerName: callerName,
-          ),
-        );
+  final callType = uri.queryParameters['type'] ?? 'audio';
+  final callerName = uri.queryParameters['callerName'] ?? 'Unknown';
+  final callerId = uri.queryParameters['callerId'] ?? '';
+  final receiverId = uri.queryParameters['receiverId'] ?? '';
+  final isVideo = uri.queryParameters['isVideo'] == 'true';
+  final channelId = uri.queryParameters['channelId'] ?? '';
+
+  return MaterialPageRoute(
+    builder: (_) => CallScreenIncomingReceiver(
+      onAccept: () {
+        // TODO: handle accept logic, like joining Agora channel
+      },
+      onDecline: () {
+        // TODO: handle decline logic, like ending call or sending signal
+      },
+      callType: callType,
+      callerName: callerName,
+      callerId: callerId,
+      receiverId: receiverId,
+      isVideo: isVideo,
+      channelId: channelId,
+    ),
+  );
 
       default:
         return MaterialPageRoute(

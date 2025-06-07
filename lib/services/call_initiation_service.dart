@@ -5,31 +5,40 @@ import 'package:http/http.dart' as http;
 class CallInitiationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  final String _notificationServerUrl =
+      'http://localhost:3000/send-notification';
 
-  final String _notificationServerUrl = 'http://localhost:3000/send-notification';
-
-  Future<void> startCall({
+  Future<void> fireStorePushingAndFcmSending({
     required String callerId,
     required String receiverId,
     required String receiverName,
     required String receiverPhoto,
     required bool isVideo,
   }) async {
-    final callId = "$callerId-$receiverId";
+    final channelId = "$callerId-$receiverId";
 
     // Save call data to Firestore
-    await _firestore.collection('calls').doc(callId).set({
-      'callerId': callerId,
-      'receiverId': receiverId,
+    Map<String,dynamic> data = {
+      'channelId': channelId,
+      'callerId': receiverId,
+      'receiverId':callerId ,
+      'agoraSenderId': receiverId,
+      'agoraReceiverId':callerId, 
       'receiverName': receiverName,
       'receiverPhoto': receiverPhoto,
-      'isVideo': isVideo,
+      'isVideo': isVideo.toString(),
       'status': 'ringing',
       'timestamp': FieldValue.serverTimestamp(),
-    });
+    };
+
+    print(" the firestore data");
+    print(data);
+
+    await _firestore.collection('calls').doc(channelId).set(data);
 
     // Get receiver's FCM token from Firestore
-    final receiverDoc = await _firestore.collection('users').doc(receiverId).get();
+    final receiverDoc =
+        await _firestore.collection('users').doc(receiverId).get();
     final receiverFcmToken = receiverDoc.data()?['fcmToken'];
 
     if (receiverFcmToken == null) {
@@ -37,19 +46,22 @@ class CallInitiationService {
       return;
     }
 
-    // Send notification
-    await _sendFcmNotification(
-      fcmToken: receiverFcmToken,
-      title: 'Incoming ${isVideo ? 'Video' : 'Audio'} Call',
-      body: 'Call from $callerId',
-      data: {
-        'type': 'call',
-        'callerId': callerId,
-        'receiverId': receiverId,
-        'isVideo': isVideo.toString(),
-        'channelId': callId,
-      },
-    );
+    // // Send notification
+    // await _sendFcmNotification(
+    //   fcmToken: receiverFcmToken,
+    //   title: 'Incoming ${isVideo ? 'Video' : 'Audio'} Call',
+    //   body: 'Call from $callerId',
+    //   data: {
+    //     'channelId': channelId,
+    //     'callerId': callerId,
+    //     'receiverId': receiverId,
+    //     'agoraSenderId': callerId,
+    //     'agoraReceiverId': receiverId,
+    //     'receiverName': receiverName,
+    //     'receiverPhoto': receiverPhoto,
+    //     'isVideo': isVideo.toString(),
+    //   },
+    // );
   }
 
   Future<void> _sendFcmNotification({
@@ -64,7 +76,7 @@ class CallInitiationService {
       'body': body,
       'data': data,
     });
-    
+
     try {
       final response = await http.post(
         Uri.parse(_notificationServerUrl),

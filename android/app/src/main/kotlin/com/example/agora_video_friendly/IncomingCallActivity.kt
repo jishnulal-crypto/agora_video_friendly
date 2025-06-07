@@ -21,9 +21,12 @@ class IncomingCallActivity : Activity() {
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
             WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
         )
+            val callerId = intent.getStringExtra("callerId") ?: "Unknown"
+            val receiverId = intent.getStringExtra("receiverId") ?: ""
+            val isVideo = intent.getStringExtra("isVideo") ?: "false"
+            val channelId = intent.getStringExtra("channelId") ?: ""
+            val callerName = intent.getStringExtra("callerName") ?: "Unknown"
 
-        val callerName = intent.getStringExtra("callerName") ?: "Unknown"
-        val callType = intent.getStringExtra("callType") ?: "audio" // "video" or "audio"
 
 
         // Root layout
@@ -41,7 +44,7 @@ class IncomingCallActivity : Activity() {
         // Call icon
         val icon = ImageView(this).apply {
             setImageResource(
-                if (callType == "video") android.R.drawable.presence_video_online
+                if (isVideo == "true") android.R.drawable.presence_video_online
                 else android.R.drawable.sym_call_incoming
             )
             setColorFilter(Color.WHITE)
@@ -69,21 +72,38 @@ class IncomingCallActivity : Activity() {
             )
         }
 
-        // Accept Button
+                // Accept Button
         val acceptButton = Button(this).apply {
             text = "Accept"
             setBackgroundColor(Color.parseColor("#4CAF50")) // Green
             setTextColor(Color.WHITE)
             setPadding(20, 10, 20, 10)
+
             setOnClickListener {
+                val callerId = intent.getStringExtra("callerId") ?: "Unknown"
+                val receiverId = intent.getStringExtra("receiverId") ?: ""
+                val isVideo = intent.getStringExtra("isVideo") ?: "false"
+                val channelId = intent.getStringExtra("channelId") ?: ""
+                val callerName = intent.getStringExtra("callerName") ?: "Unknown"
+
+                // Construct initial route with all parameters
+                val route = "/callScreen" +
+                        "?callerId=$callerId" +
+                        "&receiverId=$receiverId" +
+                        "&isVideo=$isVideo" +
+                        "&channelId=$channelId" +
+                        "&callerName=$callerName"
+
                 val intent = FlutterActivity
                     .withNewEngine()
-                    .initialRoute("/callScreen?type=audio&callerName=$callerName")
+                    .initialRoute(route)
                     .build(this@IncomingCallActivity)
+
                 startActivity(intent)
                 finish()
             }
         }
+
 
         // Decline Button
         val declineButton = Button(this).apply {
